@@ -1,0 +1,355 @@
+{% extends 'base.html' %}
+{% load staticfiles i18n karazhan_tags %}
+
+{% block import_css %}
+    <link href="{% static 'karazhan/css/plugins/sweetalert/sweetalert.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block main_content %}
+
+{% if filter_info %}
+    {% include 'commponents/kc_filter_nav.html' with filter_info=filter_info %}
+{% endif %}
+
+{% if custom_table_data %}
+    <div class="ibox float-e-margins">
+        <div class="ibox-title" style="min-height: 60px;">
+            <h5>{{ custom_table_data.title }}</h5>
+            {% if custom_table_data.is_can_export %}
+                <div class="ibox-tools">
+                   <a id="btn-custom-table-export" title="导出csv" style="color:'#c4c4c4'">
+                     <i class="glyphicon glyphicon-export icon-share"></i><span class="caret"></span>
+                   </a>
+                </div>
+            {% endif %}
+        </div>
+        <div class="ibox-content">
+            <table data-toggle="table">
+                <thead>
+                    <tr>
+                        {% for head in custom_table_data.head %}
+                        <th>{{ head }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for body in custom_table_data.body %}
+                        <tr>
+                            {% for row in body %}
+                                <td>{{ row }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endif %}
+
+<div class="ibox float-e-margins">
+    <div class="ibox-title" style="min-height: 60px;">
+     <h5>数据明细
+    {% if not is_readonly %}
+        <button style="margin-left: 20px;" class="btn btn-primary btn-sm editBtn" data-toggle="modal" data-target="#formModal">添加</button>
+    {% endif %}
+        </h5>
+    {% if is_can_export %}
+     <div class="ibox-tools">
+        <a id="btn-export" title="导出csv" style="color:'#c4c4c4'">
+          <i class="glyphicon glyphicon-export icon-share"></i><span class="caret"></span>
+        </a>
+     </div>
+    {% endif %}
+    </div>
+    <div class="ibox-content">
+        <table data-toggle="table" data-height="600" data-custom-sort="customSort" data-sort-name="{{ sort_name }}" data-sort-order="{{ sort_order }}">
+            <thead>
+                <tr>
+                    {% for column_code, column, is_sort in list_display %}
+                    <th data-field="{{ column_code }}" {% if is_sort %}data-sortable="true"{% endif %}>{{ column }}</th>
+                    {% endfor %}
+                    {% if not is_readonly or button_config_list %}
+                    <th>操作</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data_list %}
+                    <tr>
+                        {% for column in row.datas %}
+                            <td>{{ column | linebreaksbr }}</td>
+                        {% endfor %}
+                        {% if not is_readonly or row.button_config_list %}
+                        <td>
+                            <button style="margin-left: 5px;" class="btn btn-primary btn-sm editBtn"
+                            data-toggle="modal" data-id="{{ row.id }}" data-target="#formModal">修改</button>
+                            {% if is_can_delete %}
+                                <button style="margin-left: 5px;" class="btn btn-primary btn-sm deleteBtn"
+                                data-id="{{ row.id }}">删除</button>
+                            {% endif %}
+                            {% for bc in row.button_config_list %}
+                                {% if bc.type == 'javascript' %}
+                                    <button style="margin-left: 5px;" class="btn btn-primary btn-sm customBtn"
+                                    data-url="{{ bc.url }}">{{ bc.name }}</button>
+                                {% else %}
+                                    <a class="btn btn-primary btn-sm" style="margin-left: 5px" href="{{ bc.url }}" target="{{ bc.target }}" role="button">{{ bc.name }}</a>
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% include 'commponents/kc_pagination_nav.html' with paginator_info=paginator_info %}
+    </div>
+</div>
+
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 700px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel"></h4>
+            </div>
+            <form class="col-sm-12 form-horizontal" method='post' action='' id='modalForm'>
+                <div class="modal-body" id="formBody"></div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="btn-submit" >提交</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+<div style='display: none;' class="form-group" id='editForm'>
+    <div class="text-center row base_error" style="margin: 0 0 10px 0">
+    </div>
+{% for field in form %}
+    <div class="form-group row">
+        <label class="col-sm-3 control-label">{{ field.label }}：</label>
+            {{ field.errors }}
+        <div class="col-sm-9">
+            {{ field }}
+         </div>
+    </div>
+{% endfor %}
+</div>
+
+{% for row in data_list %}
+    <div style="display: none;" id="editForm{{ row.id }}">
+    <div class="text-center row base_error" style="margin: 0 0 10px 0">
+    </div>
+    {% for field in row.form %}
+        <div class="form-group row">
+            <label class="col-sm-3 control-label">{{ field.label }}：</label>
+                {{ field.errors }}
+            <div class="col-sm-9">
+                {{ field }}
+             </div>
+        </div>
+    {% endfor %}
+    </div>
+{% endfor %}
+
+{% endblock %}
+
+{% block main_js %}
+<script src="{% static 'karazhan/js/plugins/sweetalert/sweetalert.min.js' %}"></script>
+<script>
+function api_send(url, data, callback){
+    console.log('data==', data, 'url=', url)
+    $.ajax({
+        url: url,
+        data: data,
+        dataType:'JSON',
+        type:'post',
+        success:function(result){
+            console.log('result==', result)
+            if(result.msg == 'OK'){
+                callback()
+                alert('成功');
+            }else{
+                callback(result)
+            }
+        }
+    }).done().fail().always();
+}
+
+$(document).keyup(function(e) {
+    var key = e.which;
+    if (key == 13) {
+        if ($('#formModal').css('display') == 'block') {
+            $('#btn-submit').click();
+        }
+        if ($('.sweet-alert.showSweetAlert.visible').length == 1) {
+            $('.confirm').click();
+        }
+        if ($('#formModal').css('display') != 'block' && $('.sweet-alert.showSweetAlert.visible').length == 0) {
+            $('#search').click();
+        }
+    }
+});
+
+$(document).ready(function() {
+    function getParams(url) {
+        try {
+            var index = url.indexOf('?');
+            url = url.match(/\?([^#]+)/)[1];
+            var obj = {}, arr = url.split('&');
+            for (var i = 0; i < arr.length; i++) {
+                var subArr = arr[i].split('=');
+                var key = decodeURIComponent(subArr[0]);
+                var value = decodeURIComponent(subArr[1]);
+                obj[key] = value;
+            }
+            return obj;
+        } catch (err) {
+            return null;
+        }
+    };
+    var dataId = null
+    $('.editBtn').on('click', function() {
+        let id = $(this).data('id');
+        if (id) {
+            dataId = id
+            $('h4#myModalLabel').text('修改');
+            var html = $('#editForm' + id).html();
+        } else {
+            dataId = null
+            $('h4#myModalLabel').text('添加');
+            var html = $('#editForm').html();
+        };
+        $('#formBody').html(html);
+        $('input').addClass('form-control');
+        $('select').addClass('form-control');
+        $('textarea').addClass('form-control');
+        $(".has-error").removeClass( "has-error" );
+        $('.base_error').html('');
+    });
+    $('#btn-submit').on('click', function() {
+        f = $('#modalForm')
+        if (dataId){
+            url = window.location.pathname + dataId + '/change/'
+        } else {
+            url = 'add/'
+        }
+        swal(
+            {
+                title: "确认?",
+                text: "确认执行此操作!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "确认",
+                cancelButtonText: "取消",
+                closeOnConfirm: false,
+                closeOnConCancel: true
+            }, function() {
+                api_send(url, f.serialize(), function(result){
+                    $('.help-block').remove()
+                    if (result.ok) {
+                        $("#formModal").modal('hide');
+                        swal("成功", "", "success");
+                        setTimeout(
+                            function() {
+                                window.location.reload();
+                            }, 1000
+                        );
+                    } else {
+                        errors = result.error
+                        if (typeof(errors) == 'string') {
+                            swal(result.error, "", "error");
+                        } else {
+                            $(".has-error").removeClass( "has-error" );
+                            $(".base_error").html('');
+                            if (errors['__all__']){
+                                $('.base_error').addClass("has-error");
+                                tip = '<span id="cname-error" class="help-block m-b-none"><i class="fa fa-times-circle"></i>  [err_msg]</span>'.replace('[err_msg]', errors['__all__'])
+                                $('.base_error').html(tip);
+                            }
+                            swal.close();
+                            input_dict = $('#modalForm').find('input,select')
+                            input_dict.each(function(idx, ele){
+                                ele_name = $(ele).attr('name')
+                                if (errors[ele_name]){
+                                    $(ele).closest("div[class='form-group row']").addClass("has-error");
+                                    tip = '<span id="cname-error" class="help-block m-b-none"><i class="fa fa-times-circle"></i>  [err_msg]</span>'.replace('[err_msg]', errors[ele_name])
+                                    $(ele).after(tip)
+                                }
+                            })
+                        }
+                    }
+                })
+            }
+        )
+    });
+    $('.deleteBtn').on('click', function() {
+        let id = $(this).data('id');
+        let url = window.location.pathname + id + '/delete/'
+        swal(
+            {
+                title: "确认?",
+                text: "确认删除此记录?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "确认",
+                cancelButtonText: "取消",
+                closeOnConfirm: false,
+                closeOnConCancel: true
+            }, function() {
+                api_send(url, '', function(result){
+                    if (result.ok) {
+                        swal("删除成功", "", "success");
+                        setTimeout(
+                            function() {
+                                window.location.reload();
+                            }, 1000
+                        );
+                    }
+                    else{
+                        swal("删除失败", "", "error");
+                    }
+                })
+            }
+        )
+
+    });
+    $('.customBtn').on('click', function() {
+        let url = $(this).data('url');
+        let data = getParams(url);
+        swal(
+            {
+                title: "确认?",
+                text: "确认执行此记录!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "确认",
+                cancelButtonText: "取消",
+                closeOnConfirm: false,
+                closeOnConCancel: true
+            }, function() {
+                api_send(url, data, function(result){
+                    if (result.ok) {
+                        swal("操作成功", "", "success");
+                        setTimeout(
+                            function() {
+                                window.location.reload();
+                            }, 1000
+                        );
+                    }
+                    else{
+                        swal("操作失败", "", "error");
+                    }
+                })
+            }
+        )
+
+    });
+})
+</script>
+{% endblock %}

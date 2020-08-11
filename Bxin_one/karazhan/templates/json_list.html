@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load staticfiles i18n karazhan_tags %}
+
+{% block import_css %}
+    <link href="{% static 'karazhan/css/plugins/sweetalert/sweetalert.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block main_content %}
+
+{% if filter_info %}
+    {% include 'commponents/kc_filter_nav.html' with filter_info=filter_info %}
+{% endif %}
+
+<div class="ibox float-e-margins">
+    <div class="ibox-title" style="min-height: 60px;">
+        <h5>数据明细</h5>
+    </div>
+    <div class="ibox-content">
+        <table data-toggle="table" data-height="600" data-custom-sort="customSort" data-sort-name="{{ sort_name }}" data-sort-order="{{ sort_order }}">
+            <thead>
+                <tr>
+                    {% for th in data_head %}
+                        <th data-field="{{ th }}">{{ th }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data_list %}
+                    <tr>
+                        {% for column in row %}
+                            <td>{{ column | linebreaksbr }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% include 'commponents/kc_pagination_nav.html' with paginator_info=paginator_info %}
+    </div>
+</div>
+
+{% endblock %}

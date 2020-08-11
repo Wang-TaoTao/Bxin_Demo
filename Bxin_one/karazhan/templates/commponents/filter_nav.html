@@ -1,0 +1,233 @@
+{% load staticfiles i18n karazhan_tags %}
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>搜索条件</h5>
+                <a href="#" onclick="document:refresh_form.submit()" style="margin-left: 10px;">
+                    <i class="fa fa-refresh"></i>
+                </a>
+                <div class="ibox-tools">
+                    <a class="collapse-link">
+                        <i class="fa fa-chevron-up"></i>
+                    </a>
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-wrench"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li><a href="#"></a></li>
+                    </ul>
+                    <a class="close-link">
+                        <i class="fa fa-times"></i>
+                    </a>
+                </div>
+            </div>
+            <div style="display: none">
+                <form role="form" id="refresh_form" action="" method="get">
+                    <button type="button" id="refresh">刷新</button>
+                </form>
+            </div>
+            <div class="ibox-content">
+                <form role="form" id="form0" class="form-inline" action="" method="get">
+                    {% if time_filter %}
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <label for="currency">日期：</label>
+                                <input class="form-control layer-date" placeholder="开始日期" autocomplete="off"
+                                       id="start_time" name="start_time" value="{{ start_time | hdatetime }}"
+                                       onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})"> -
+                                <input class="form-control layer-date" placeholder="结束日期" autocomplete="off"
+                                       id="end_time" name="end_time" value="{{ end_time | hdatetime }}"
+                                       onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% if filter_order_group %}
+                        <div class="form-group" style="margin-left:20px;">
+                            <label for="order_group">{{ filter_order_group }}：</label>
+                            <input type="text" class="form-control" id="order_group" name="order_group"
+                                   value="{{ order_group }}">
+                        </div>
+                    {% endif %}
+                    {% if uuid_filter_name %}
+                        <div class="form-group" style="margin-left:20px;">
+                            <label for="uuid">{{ uuid_filter_name }}：</label>
+                            <input type="text" class="form-control" id="uuid" name="uuid" value="{{ uuid }}">
+                        </div>
+                    {% endif %}
+                    {% if user_filter_name %}
+                        <div class="form-group" style="margin-left:20px;">
+                            <label for="username">{{ user_filter_name }}：</label>
+                            <input type="text" class="form-control" id="username" name="username"
+                                   value="{{ username }}">
+                        </div>
+                    {% endif %}
+                    {% if user_filter_name2 %}
+                        <div class="form-group" style="margin-left:20px;">
+                            <label for="username2">{{ user_filter_name2 }}：</label>
+                            <input type="text" class="form-control" id="username2" name="username2"
+                                   value="{{ username2 }}">
+                        </div>
+                    {% endif %}
+                    {% if sub_uuid_filter_name %}
+                        <div class="form-group" style="margin-left:20px;">
+                            <label for="sub_uuid">{{ sub_uuid_filter_name }}：</label>
+                            <input type="text" class="form-control" id="sub_uuid" name="sub_uuid"
+                                   value="{{ sub_uuid }}">
+                        </div>
+                    {% endif %}
+                    {% if currencys %}
+                        <div class="form-group" style="margin-left:20px;">
+                            {% if currencys_name %}
+                                <label for="currency">{{ currencys_name }}：</label>
+                            {% else %}
+                                <label for="currency">币种：</label>
+                            {% endif %}
+                            <select class="form-control" id="currency" name="currency">
+                                <option value="ALL">全部</option>
+                                {% for cury in currencys %}
+                                    <option value="{{ cury }}" {% if cury == currency %}
+                                            selected {% endif %}>{{ cury }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    {% endif %}
+                    {% if currencys2 %}
+                        <div class="form-group" style="margin-left:20px;">
+                            {% if currencys_name2 %}
+                                <label for="currency2">{{ currencys_name2 }}：</label>
+                            {% else %}
+                                <label for="currency2">币种：</label>
+                            {% endif %}
+                            <select class="form-control" id="currency2" name="currency2">
+                                <option value="ALL">全部</option>
+                                {% for cury in currencys2 %}
+                                    <option value="{{ cury }}" {% if cury == currency2 %}
+                                            selected {% endif %}>{{ cury }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    {% endif %}
+                    {% if transaction_pair_list %}
+                        <div class="form-group" style="margin-left:20px;">
+                            <label for="transaction_pair">交易对：</label>
+                            <select class="form-control" id="transaction_pair" name="transaction_pair">
+                                <option value="ALL">全部</option>
+                                {% for cury in transaction_pair_list %}
+                                    <option value="{{ cury }}" {% if cury == transaction_pair %}
+                                            selected {% endif %}>{{ cury }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    {% endif %}
+                    {% if not_all_symbol_list %}
+                        <div class="form-group" style="margin-left:20px;">
+                            <label for="transaction_pair">交易对：</label>
+                            <select class="form-control" id="transaction_pair" name="transaction_pair">
+                                {% for cury in not_all_symbol_list %}
+                                    <option value="{{ cury }}" {% if cury == transaction_pair %}
+                                            selected {% endif %}>{{ cury }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    {% endif %}
+                    {% if not_all_currencys %}
+                        <div class="form-group" style="margin-left:20px;">
+                            <label for="currency">{{ not_all_currencys_name }}：</label>
+                            <select class="form-control" id="currency" name="currency">
+                                {% for cury in not_all_currencys %}
+                                    <option value="{{ cury }}" {% if cury == currency %}
+                                            selected {% endif %}>{{ cury }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    {% endif %}
+                    {% if not_all_currencys2 %}
+                        <div class="form-group" style="margin-left:20px;">
+                            <label for="currency2">{{ not_all_currencys_name2 }}：</label>
+                            <select class="form-control" id="currency2" name="currency2">
+                                {% for cury in not_all_currencys2 %}
+                                    <option value="{{ cury }}" {% if cury == currency2 %}
+                                            selected {% endif %}>{{ cury }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    {% endif %}
+                    {% if not_all_currencys3 %}
+                        <div class="form-group" style="margin-left:20px;">
+                            <label for="currency3">{{ not_all_currencys_name3 }}：</label>
+                            <select class="form-control" id="currency3" name="currency3">
+                                {% for cury in not_all_currencys3 %}
+                                    <option value="{{ cury }}" {% if cury == currency3 %}
+                                            selected {% endif %}>{{ cury }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    {% endif %}
+                    {% if operations %}
+                        <div class="form-group" style="margin-left:20px;">
+                            <label for="operation">交易方向：</label>
+                            <select class="form-control" id="operation" name="operation">
+                                <option value="ALL">全部</option>
+                                <option value="BUY" {% if operation == "BUY" %} selected {% endif %}>买入</option>
+                                <option value="SELL" {% if operation == "SELL" %} selected {% endif %}>卖出</option>
+                            </select>
+                        </div>
+                    {% endif %}
+                    {% if custom_operations %}
+                        <div class="form-group" style="margin-left:20px;">
+                            <label for="operation">{{ custom_operations_name }}：</label>
+                            <select class="form-control" id="operation" name="operation">
+                                <option value="ALL">全部</option>
+                                {% for operation_text, operation_code in custom_operations %}
+                                    <option value="{{ operation_code }}" {% if operation == operation_code %}
+                                            selected {% endif %}>{{ operation_text }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    {% endif %}
+                    {% if status_list %}
+                        <div class="form-group" style="margin-left:20px;">
+                            <label for="status">状态：</label>
+                            <select class="form-control" id="status" name="status">
+                                <option value="ALL">全部</option>
+                                {% for status_text, status_code in status_list %}
+                                    <option value="{{ status_code }}" {% if status == status_code %}
+                                            selected {% endif %}>{{ status_text }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    {% endif %}
+
+                    {% if filter_order_status %}
+                        <div class="form-group" style="margin-left:20px;">
+                            <label for="status">{{ filter_order_status }}：</label>
+                            <select class="form-control" name="order-status">
+                                <option value="">全部</option>
+                                {% for status_code, status_text in order_status_list.items %}
+                                    <option value="{{ status_code }}" {% if param_order_status == status_code %} selected {% endif %}>{{ status_text }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    {% endif %}
+
+                    {% if sort_list %}
+                        <div class="form-group" style="margin-left:20px;">
+                            <label for="status">排序：</label>
+                            <select class="form-control" id="sort" name="sort">
+                                {% for sort_text, sort_code in sort_list %}
+                                    <option value="{{ sort_code }}" {% if sort == sort_code %}
+                                            selected {% endif %}>{{ sort_text }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    {% endif %}
+                    <div class="form-group" style="margin-left: 20px; margin-top:5px">
+                        <button class="btn btn-primary" type="button" id="search">查询</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

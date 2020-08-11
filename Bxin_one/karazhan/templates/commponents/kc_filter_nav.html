@@ -1,0 +1,79 @@
+{% load staticfiles i18n karazhan_tags %}
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>搜索条件</h5>
+                <a href="#" onclick="document:refresh_form.submit()" style="margin-left: 10px;">
+                    <i class="fa fa-refresh"></i>
+                </a>
+                <div class="ibox-tools">
+                    <a class="collapse-link">
+                        <i class="fa fa-chevron-up"></i>
+                    </a>
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-wrench"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li><a href="#"></a></li>
+                    </ul>
+                    <a class="close-link">
+                        <i class="fa fa-times"></i>
+                    </a>
+                </div>
+            </div>
+            <div style="display: none">
+                <form role="form" id="refresh_form" action="" method="get">
+                    <button type="button" id="refresh">刷新</button>
+                </form>
+            </div>
+            <div class="ibox-content">
+                <form role="form" id="form0" class="form-inline" action="" method="get">
+                    {% for filter in filter_info %}
+                        {% if filter.type == 'datetime_range_filter' %}
+                            <div class="form-group" style="margin: 0px 10px;">
+                                <div class="col-sm-12">
+                                    {% with filter.field|add:'_start_time' as start_time %}
+                                    <label >{{ filter.title }}：</label>
+                                    <input class="form-control layer-date" placeholder="开始日期" autocomplete="off"
+                                    id="{{ filter.field }}_start_time" name="{{ filter.field }}_start_time"
+                                    value="{{ filter_data|get_dict_value:start_time | hdatetime }}"
+                                           onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})"> -
+                                    {% endwith %}
+                                    {% with filter.field|add:'_end_time' as end_time %}
+                                    <input class="form-control layer-date" placeholder="结束日期" autocomplete="off"
+                                    id="{{ filter.field }}_end_time" name="{{ filter.field }}_end_time"
+                                    value="{{ filter_data|get_dict_value:end_time | hdatetime }}"
+                                           onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+                                    {% endwith %}
+                                </div>
+                            </div>
+                        {% elif filter.type == 'select_filter' %}
+                            <div class="form-group" style="margin: 0px 10px">
+                                <label>{{ filter.title }}：</label>
+                                <select class="form-control" id="{{ filter.field }}" name="{{ filter.field }}">
+                                    {% for o in filter.options %}
+                                    {% with filter_data|get_dict_value:filter.field as value %}
+                                    <option value="{{ o.value }}" {% if value == o.value %} selected {% endif %}>{{ o.text }}</option>
+                                    {% endwith %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        {% elif filter.type == 'search_filter' %}
+                            <div class="form-group" style="margin: 0px 10px">
+                                <label>{{ filter.title }}：</label>
+                                <input type="text" class="form-control"
+                                id="{{ filter.field }}" name="{{ filter.field }}"
+                                value="{{ filter_data|get_dict_value:filter.field | default_if_none:"" }}">
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                    <div class="form-group" style="margin-left: 20px; margin-top:5px">
+                        <button class="btn btn-primary" type="button" id="search">查询</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

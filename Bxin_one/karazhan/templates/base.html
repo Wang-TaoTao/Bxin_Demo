@@ -1,0 +1,124 @@
+{% load staticfiles i18n karazhan_tags %}
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="{% static 'karazhan/js/jquery.min.js' %}"></script>
+    <script src="{% static 'karazhan/js/bootstrap-table.min.js' %}"></script>
+    <script src="{% static 'karazhan/js/bootstrap.min.js' %}"></script>
+    <link href="{% static 'karazhan/css/bootstrap-table.min.css' %}" rel="stylesheet">
+    <link href="{% static 'karazhan/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'karazhan/css/font-awesome.min.css' %}" rel="stylesheet">
+    <link href="{% static 'karazhan/css/animate.min.css' %}" rel="stylesheet">
+    <link href="{% static 'karazhan/css/style.min.css' %}" rel="stylesheet">
+    <link href="{% static 'karazhan/css/plugins/sweetalert/sweetalert.css' %}" rel="stylesheet">
+    {% block import_css %}{% endblock %}
+</head>
+<body class="fixed-sidebar full-height-layout gray-bg">
+
+<div class="wrapper wrapper-content">
+    {% block main_content %}
+    {% endblock %}
+</div>
+
+<script src="{% static 'karazhan/js/content.min.js' %}"></script>
+<script src="{% static 'karazhan/js/plugins/layer/laydate/laydate.js' %}"></script>
+<script src="{% static 'karazhan/js/plugins/sweetalert/sweetalert.min.js' %}"></script>
+{% block import_js %}
+{% endblock %}
+<script>
+$(document).ready(function() {
+    if (navigator.userAgent.indexOf("Chrome") < 0) {
+        swal("欢迎使用管理后台", "请使用Chrome浏览器以体验最佳效果！");
+    };
+    $('#search').bind('click', function() {
+        let url = window.location.href.split('?')[0]
+        params = $('#form0').serialize();
+        url = url + "?" + params + '&sort_name={{ sort_name }}&sort_order={{ sort_order }}'
+        window.location.href = url
+    });
+
+    $('table').on('sort.bs.table', function(e, name, order) {
+        let url = window.location.search;
+        url = url.substring(1, url.length);
+        let action_url = '';
+        if (url) {
+            url.split('&').forEach(function (item) {
+                if (item.indexOf("page=") == -1) {
+                    if (item.startsWith('sort_name=') && item.startsWith('sort_order=')){
+                        action_url = action_url + item + '&'
+                    }
+                }
+            });
+        }
+        action_url = window.location.origin + window.location.pathname + '?' + action_url + 'sort_name=' + name + '&sort_order=' + order
+        window.location.href = action_url
+    });
+
+    $('.page-number').on('click', function(e) {
+        page = $(this).data()["page"];
+        let url = window.location.search;
+        url = url.substring(1, url.length);
+        let action_url = '';
+        if (url) {
+            url.split('&').forEach(function (item) {
+                if (item.indexOf("page=") == -1) {
+                    action_url = action_url + item + '&'
+                }
+            });
+        }
+        action_url = window.location.origin + window.location.pathname + '?' + action_url + 'page=' + page
+        window.location.href = action_url
+    });
+
+    $('.page-number2').on('click', function(e) {
+        page = $(this).data()["page"];
+        let url = window.location.search;
+        url = url.substring(1, url.length);
+        let action_url = '';
+        if (url) {
+            url.split('&').forEach(function (item) {
+                if (item.indexOf("page2=") == -1) {
+                    action_url = action_url + item + '&'
+                }
+            });
+        }
+        action_url = window.location.origin + window.location.pathname + '?' + action_url + 'page2=' + page
+        window.location.href = action_url
+    });
+
+    $('#btn-export').on('click', function(e) {
+        let url = window.location.href.split('?')[0]
+        params = $('#form0').serialize();
+        params = params + "&is_export_csv=1"
+        url = url + "?" + params
+        window.location.href = url
+    });
+
+    $('#btn-custom-table-export').on('click', function(e) {
+        let url = window.location.href.split('?')[0]
+        params = $('#form0').serialize();
+        params = params + "&is_export_custom_table_csv=1"
+        url = url + "?" + params
+        window.location.href = url
+    });
+
+    function customSort(sortName, sortOrder, data) {
+        var order = sortOrder === 'desc' ? -1 : 1
+        data.sort(function (a, b) {
+            var aa = +((a[sortName] + '').replace(/[^\d]/g, ''))
+            var bb = +((b[sortName] + '').replace(/[^\d]/g, ''))
+            if (aa < bb) {
+                return order * -1
+            }
+            if (aa > bb) {
+                return order
+            }
+            return 0
+        })
+    };
+});
+</script>
+{% block main_js %}
+{% endblock %}
+</body>
+</html>

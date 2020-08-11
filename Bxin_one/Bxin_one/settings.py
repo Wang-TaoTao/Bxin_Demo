@@ -25,7 +25,9 @@ SECRET_KEY = 'z7y91p_uld)i+n1wq5xs&m%g0ml@-lr=8q058*hn@grmctdhi)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1','www.wangtaotao.com','www.bxin.com']
+
+
 
 
 # Application definition
@@ -38,14 +40,18 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'rest_framework',
-]
+    'apps.index',
+    'karazhan.apps.KarazhanConfig',
+    'graphene_django',
+    'apps.GraphQL',
 
+    #'rest_framework',
+]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -56,7 +62,7 @@ ROOT_URLCONF = 'Bxin_one.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -75,13 +81,36 @@ WSGI_APPLICATION = 'Bxin_one.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+        'ENGINE': 'django.db.backends.mysql', # 数据库引擎
+        'HOST': '127.0.0.1', # 数据库主机
+        'PORT': 3306, # 数据库端口
+        'USER': 'root', # 数据库用户名
+        'PASSWORD': 'Mysql123456.', # 数据库用户密码
+        'NAME': 'bxin' # 数据库名字
+    },
 }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'mapp_borrow',
+#         'USER': 'postgres',
+#         'PASSWORD': 'wangtaotao1',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#         'ATOMIC_REQUESTS': True,
+#         'CONN_MAX_AGE': 100
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -120,8 +149,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
-
+# 配置静态文件加载路径
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 # admin管理站点
 LANGUAGE_CODE = 'zh-hans' # 使用中国语言
 TIME_ZONE = 'Asia/Shanghai' # 使用中国上海时间
+
+
+GRAPHENE = {
+    'SCHEMA': 'Bxin_one.schema.schema'
+}

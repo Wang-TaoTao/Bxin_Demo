@@ -1,0 +1,22 @@
+{% load staticfiles i18n karazhan_tags %}
+
+<div class="fixed-table-pagination" style="display: block;">
+    <div class="pull-left pagination-detail">
+        <span class="pagination-info">总共 {{ paginator_info.item_count}} 条记录</span>
+    </div>
+    <div class="pull-right pagination">
+        <ul class="pagination pagination-outline">
+            {% if paginator_info.current_page > 6 %}
+                <li class="page-number2 " data-page="1"><a href="javascript:void(0)">1</a></li>
+                <li><a>...</a></li>
+            {% endif %}
+            {% for page_num in paginator_info.show_pages %}
+                <li class="page-number2 {% if page_num == paginator_info.current_page %} active {% endif %}" data-page="{{ page_num }}"><a href="javascript:void(0)">{{ page_num }}</a></li>
+            {% endfor %}
+            {% if paginator_info.show_last_page_num %}
+                <li><a>...</a></li>
+                <li class="page-number2 " data-page="{{ paginator_info.last_page }}"><a href="javascript:void(0)">{{ paginator_info.last_page }}</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</div>
