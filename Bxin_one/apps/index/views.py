@@ -16,7 +16,6 @@ def init_app_data():
     return apps
 
 
-
 def get_menu(request):
     global_app_data = init_app_data()
     published_app_data = global_app_data.get('published')
