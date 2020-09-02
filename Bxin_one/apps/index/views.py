@@ -26,7 +26,6 @@ def get_menu(request):
     return JsonResponse(data=response, safe=False)
 
 
-
 def get_images(request):
     if request.method == 'GET':
         md5 = request.GET.get('md5')
