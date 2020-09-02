@@ -31,11 +31,10 @@ def get_images(request):
     if request.method == 'GET':
         md5 = request.GET.get('md5')
         imgfile = os.path.join(settings.STATICFILES_IMAGES, md5 + '.jpg')
-        print(imgfile)
 
         data = open(imgfile, 'rb').read()
-        # return HttpResponse(content=data, content_type='image/jpg')
-        return FileResponse(data, content_type='image/jpg')
+        return HttpResponse(content=data, content_type='image/jpeg')
+        # return FileResponse(data, content_type='image/jpg')
 
 
 def get_image_text(request):
