@@ -88,29 +88,29 @@ WSGI_APPLICATION = 'Bxin_one.wsgi.application'
 #     }
 # }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql', # 数据库引擎
-        'HOST': '127.0.0.1', # 数据库主机
-        'PORT': 3306, # 数据库端口
-        'USER': 'root', # 数据库用户名
-        'PASSWORD': 'Mysql123456.', # 数据库用户密码
-        'NAME': 'bxin' # 数据库名字
-    },
-}
-
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'mapp_borrow',
-#         'USER': 'postgres',
-#         'PASSWORD': 'wangtaotao1',
-#         'HOST': 'localhost',
-#         'PORT': '5432',
-#         'ATOMIC_REQUESTS': True,
-#         'CONN_MAX_AGE': 100
-#     }
+#         'ENGINE': 'django.db.backends.mysql', # 数据库引擎
+#         'HOST': '127.0.0.1', # 数据库主机
+#         'PORT': 3306, # 数据库端口
+#         'USER': 'root', # 数据库用户名
+#         'PASSWORD': 'Mysql123456.', # 数据库用户密码
+#         'NAME': 'bxin' # 数据库名字
+#     },
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'mapp_borrow',
+        'USER': 'postgres',
+        'PASSWORD': 'wangtaotao1',
+        'HOST': 'localhost',
+        'PORT': '5432',
+        'ATOMIC_REQUESTS': True,
+        'CONN_MAX_AGE': 100
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -151,6 +151,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 # 配置静态文件加载路径
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATICFILES_IMAGES = os.path.join(STATICFILES_DIRS[0], 'images')
 
 # admin管理站点
 LANGUAGE_CODE = 'zh-hans' # 使用中国语言

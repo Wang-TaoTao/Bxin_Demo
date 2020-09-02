@@ -1,29 +1,49 @@
-from django import http
-from django.shortcuts import render
+import os
+import yaml
+from django.http import FileResponse
+from django.http import Http404
+from django.http import HttpResponse
+from django.http import JsonResponse
+from Bxin_one import settings
+import utils.response
+from Bxin_one.settings import BASE_DIR
+
+
+def init_app_data():
+    data_file = os.path.join(settings.BASE_DIR, 'app.yaml')
+    with open(data_file, 'r', encoding='utf-8') as f:
+        apps = yaml.load(f)
+    return apps
 
 
 
-def index(request):
+def get_menu(request):
+    global_app_data = init_app_data()
+    published_app_data = global_app_data.get('published')
+    response = utils.response.wrap_json_response(data=published_app_data,
+                                                 code=utils.response.ReturnCode.SUCCESS)
 
-    # token = request.META.get('HTTP_AUTHTOKEN','')
-    # if token != 'apc':
-    #     return http.HttpResponseForbidden()
-
-    return render(request,'index.html')
+    return JsonResponse(data=response, safe=False)
 
 
 
-def search(request):
+def get_images(request):
+    if request.method == 'GET':
+        md5 = request.GET.get('md5')
+        imgfile = os.path.join(settings.STATICFILES_IMAGES, md5 + '.jpg')
+        print(imgfile)
 
-    keyword = request.GET.get('search',' ')
-    data = []
-    print(keyword)
-    if len(keyword) >= 3:
-        print('大于等于三个字符了')
-        # 查询相关用户uid和nickname
-        data = [{'nickname': 'tarss', 'name': "tarsss", 'phone': "+8617600110411"},
-                        {'nickname': 'asdg', 'name': "asdg", 'phone': "+8615041890909"},
-                        {'nickname': 'abcde', 'name': "abcde", 'phone': "+861504189000"},]
-        data = {'data':data}
+        data = open(imgfile, 'rb').read()
+        # return HttpResponse(content=data, content_type='image/jpg')
+        return FileResponse(data, content_type='image/jpg')
 
-    return http.JsonResponse(data=data, safe=False)
+
+def get_image_text(request):
+    if request.method == 'GET':
+        md5 = request.GET.get('md5')
+
+        response_data = {}
+        response_data['name'] = md5 + '.jpg'
+        response_data['url'] = '/service/image?md5=%s' % md5
+        response = response_data
+        return JsonResponse(data=response, safe=False)
