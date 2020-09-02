@@ -6,7 +6,6 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 from Bxin_one import settings
 import utils.response
-from Bxin_one.settings import BASE_DIR
 
 
 def init_app_data():
